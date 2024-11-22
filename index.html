@@ -185,43 +185,15 @@
             el.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                isDrawing = true;
-                activeMarker = marker;
-                el.classList.add('active');
-                map.dragPan.disable();
-
-                tempLine = {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: [marker.coordinates, marker.coordinates]
-                    }
-                };
-
-                updateTemporaryLine();
+                startDrawing(marker, el);
                 document.addEventListener('mousemove', handleMouseMove);
                 document.addEventListener('mouseup', handleMouseUp);
             });
 
-            // Touch events
+            // Touch events - now starts immediately
             el.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                touchTimeout = setTimeout(() => {
-                    isDrawing = true;
-                    activeMarker = marker;
-                    el.classList.add('active');
-                    map.dragPan.disable();
-
-                    tempLine = {
-                        type: 'Feature',
-                        geometry: {
-                            type: 'LineString',
-                            coordinates: [marker.coordinates, marker.coordinates]
-                        }
-                    };
-
-                    updateTemporaryLine();
-                }, 200);
+                startDrawing(marker, el);
             }, { passive: false });
 
             el.addEventListener('touchmove', handleTouchMove);
@@ -358,6 +330,39 @@
         activeMarker = null;
         tempLine = null;
         map.dragPan.enable();
+        updateTemporaryLine();
+    }
+	
+	function startDrawing(marker, el) {
+        isDrawing = true;
+        activeMarker = marker;
+        el.classList.add('active');
+        map.dragPan.disable();
+
+        tempLine = {
+            type: 'Feature',
+            geometry: {
+                type: 'LineString',
+                coordinates: [marker.coordinates, marker.coordinates]
+            }
+        };
+
+        updateTemporaryLine();
+    }
+
+    function handleTouchMove(e) {
+        if (!isDrawing || !tempLine) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const rect = map.getCanvas().getBoundingClientRect();
+        const point = {
+            x: touch.clientX - rect.left,
+            y: touch.clientY - rect.top
+        };
+        const lngLat = map.unproject(point);
+
+        tempLine.geometry.coordinates[1] = [lngLat.lng, lngLat.lat];
         updateTemporaryLine();
     }
 </script>
