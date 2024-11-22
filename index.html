@@ -42,7 +42,7 @@
 			transform: translate(50%, 0%);
 			
 			/* Dynamic sizing */
-			width: min(30%, 350px);
+			width: min(50%, 350px);
 			max-height: min(90vh, 600px);
 			
 			/* Prevent scrolling by default */
@@ -217,328 +217,297 @@
 const portData = {
     1: {
         name: "Mariehamn",
-        ports: [
-            { id: "M1", name: "HD-SDI 1080i50 Input" },
-            { id: "M2", name: "HD-SDI 1080i50 Output" },
-            { id: "M3", name: "AES/EBU Audio 1-8" },
-            { id: "M4", name: "MADI 64ch Input" },
-            { id: "M5", name: "3G-SDI 1080p50" }
+        inputs: [
+            { id: "MI1", name: "Monitor 1" },
+            { id: "MI2", name: "Monitor 2" },
+            { id: "MI3", name: "Tie-Line 1" },
+            { id: "MI4", name: "Tie-Line 2" }
+        ],
+        outputs: [
+            { id: "MO1", name: "Camera 1" },
+            { id: "MO2", name: "Camera 2" }
         ]
     },
     2: {
         name: "Godby",
-        ports: [
-            { id: "G1", name: "HD-SDI 1080i59.94 Input" },
-            { id: "G2", name: "AES Audio Stereo 1-2" },
-            { id: "G3", name: "MADI 64ch Output" },
-            { id: "G4", name: "4K-SDI Input" },
-            { id: "G5", name: "HD-SDI Clean Feed" }
+        inputs: [
+            { id: "GI1", name: "Monitor 1" }
+        ],
+        outputs: [
+            { id: "GO1", name: "Camera 1" },
+            { id: "GO2", name: "Camera PTZ" }
         ]
     },
     3: {
         name: "Eckerö",
-        ports: [
-            { id: "E1", name: "3G-SDI 1080p50 Input" },
-            { id: "E2", name: "Embedded Audio 1-16" },
-            { id: "E3", name: "HD-SDI PGM Output" },
-            { id: "E4", name: "MADI 32ch Input" },
-            { id: "E5", name: "AES/EBU 1-4" }
+        inputs: [
+            { id: "EI1", name: "Monitor 1" },
+            { id: "EI2", name: "EXT Monitor 1" }
+        ],
+        outputs: [
+            { id: "EO1", name: "Camera 1" }
         ]
     },
     4: {
         name: "Lumparland",
-        ports: [
-            { id: "L1", name: "4K-SDI Input" },
-            { id: "L2", name: "HD-SDI 1080i50 Output" },
-            { id: "L3", name: "Dante Audio 1-8" },
-            { id: "L4", name: "3G-SDI Backup Feed" },
-            { id: "L5", name: "AES Audio 1-8" }
+        inputs: [
+            { id: "LI1", name: "Monitor 1" },
+            { id: "LI2", name: "Monitor 2" },
+            { id: "LI3", name: "Tie-Line 1" },
+            { id: "LI4", name: "Tie-Line 2" }
+        ],
+        outputs: [
+            { id: "LO1", name: "Camera 1" },
+            { id: "LO2", name: "Camera 2" }
         ]
     },
     5: {
         name: "Geta",
-        ports: [
-            { id: "GT1", name: "HD-SDI 1080i50 Input" },
-            { id: "GT2", name: "MADI 64ch Output" },
-            { id: "GT3", name: "3G-SDI Clean Feed" },
-            { id: "GT4", name: "AES/EBU 1-8" },
-            { id: "GT5", name: "HD-SDI Preview" }
+        inputs: [
+            { id: "GI1", name: "Monitor 1" },
+            { id: "GI2", name: "Monitor 2" },
+            { id: "GI3", name: "Tie-Line 1" },
+            { id: "GI4", name: "Tie-Line 2" }
+        ],
+        outputs: [
+            { id: "GO1", name: "Camera 1" },
+            { id: "GO2", name: "Camera 2" }
         ]
     },
     6: {
         name: "Saltvik",
-        ports: [
-            { id: "S1", name: "4K-SDI Main Feed" },
-            { id: "S2", name: "HD-SDI 1080i50" },
-            { id: "S3", name: "Dante 16ch Input" },
-            { id: "S4", name: "3G-SDI Output" },
-            { id: "S5", name: "MADI 32ch" }
+        inputs: [
+            { id: "SI1", name: "Monitor 1" },
+            { id: "SI2", name: "Monitor 2" },
+            { id: "SI3", name: "Tie-Line 1" },
+            { id: "SI4", name: "Tie-Line 2" }
+        ],
+        outputs: [
+            { id: "SO1", name: "Camera 1" },
+            { id: "SO2", name: "Camera 2" }
         ]
     },
     7: {
         name: "Kumlinge",
-        ports: [
-            { id: "K1", name: "HD-SDI 1080i50 Input" },
-            { id: "K2", name: "3G-SDI 1080p50" },
-            { id: "K3", name: "AES Audio 1-16" },
-            { id: "K4", name: "MADI 64ch Input" },
-            { id: "K5", name: "4K-SDI Output" }
+        inputs: [
+            { id: "KI1", name: "Monitor 1" },
+            { id: "KI2", name: "Monitor 2" },
+            { id: "KI3", name: "Tie-Line 1" },
+            { id: "KI4", name: "Tie-Line 2" }
+        ],
+        outputs: [
+            { id: "KO1", name: "Camera 1" },
+            { id: "KO2", name: "Camera 2" }
         ]
     },
     8: {
         name: "Brändö",
-        ports: [
-            { id: "B1", name: "3G-SDI PGM Feed" },
-            { id: "B2", name: "HD-SDI Backup" },
-            { id: "B3", name: "Dante 32ch" },
-            { id: "B4", name: "MADI Output" },
-            { id: "B5", name: "AES/EBU 1-8" }
+        inputs: [
+            { id: "BI1", name: "Monitor 1" },
+            { id: "BI2", name: "Monitor 2" },
+            { id: "BI3", name: "Tie-Line 1" },
+            { id: "BI4", name: "Tie-Line 2" }
+        ],         
+        outputs: [ 
+            { id: "BO1", name: "Camera 1" },
+            { id: "BO2", name: "Camera 2" }
         ]
     },
     9: {
         name: "Iniö",
-        ports: [
-            { id: "I1", name: "4K-SDI Input" },
-            { id: "I2", name: "HD-SDI 1080i50" },
-            { id: "I3", name: "MADI 32ch Input" },
-            { id: "I4", name: "AES Audio 1-8" },
-            { id: "I5", name: "3G-SDI Clean Feed" }
+        inputs: [
+            { id: "II1", name: "Monitor 1" },
+            { id: "II2", name: "Monitor 2" },
+            { id: "II3", name: "Tie-Line 1" },
+            { id: "II4", name: "Tie-Line 2" }
+        ],         
+        outputs: [ 
+            { id: "IO1", name: "Camera 1" },
+            { id: "IO2", name: "Camera 2" }
         ]
     },
     10: {
         name: "Föglö",
-        ports: [
-            { id: "F1", name: "HD-SDI Main Feed" },
-            { id: "F2", name: "3G-SDI 1080p50" },
-            { id: "F3", name: "Dante 64ch" },
-            { id: "F4", name: "MADI Input" },
-            { id: "F5", name: "AES/EBU 1-16" }
+        inputs: [
+            { id: "FI1", name: "Monitor 1" },
+            { id: "FI2", name: "Monitor 2" },
+            { id: "FI3", name: "Tie-Line 1" },
+            { id: "FI4", name: "Tie-Line 2" }
+        ],         
+        outputs: [
+            { id: "FO1", name: "Camera 1" },
+            { id: "FO2", name: "Camera 2" }
         ]
     },
     11: {
         name: "Kökar",
-        ports: [
-            { id: "KO1", name: "4K-SDI Input" },
-            { id: "KO2", name: "HD-SDI Output" },
-            { id: "KO3", name: "MADI 64ch" },
-            { id: "KO4", name: "Dante Audio 1-32" },
-            { id: "KO5", name: "3G-SDI Backup" }
+        inputs: [
+            { id: "KOI1", name: "Monitor 1" },
+            { id: "KOI2", name: "Monitor 2" },
+            { id: "KOI3", name: "Tie-Line 1" },
+            { id: "KOI4", name: "Tie-Line 2" }
+        ],         
+        outputs: [ 
+            { id: "KOO1", name: "Camera 1" },
+            { id: "KOO2", name: "Camera 2" }
         ]
     },
     12: {
         name: "Houtskär",
-        ports: [
-            { id: "H1", name: "HD-SDI 1080i50" },
-            { id: "H2", name: "3G-SDI Input" },
-            { id: "H3", name: "AES/EBU 1-8" },
-            { id: "H4", name: "MADI 32ch Output" },
-            { id: "H5", name: "Dante 16ch" }
+        inputs: [
+            { id: "HI1", name: "Monitor 1" },
+            { id: "HI2", name: "Monitor 2" },
+            { id: "HI3", name: "Tie-Line 1" },
+            { id: "HI4", name: "Tie-Line 2" }
+        ],         
+        outputs: [ 
+            { id: "HO1", name: "Camera 1" },
+            { id: "HO2", name: "Camera 2" }
         ]
     },
     13: {
         name: "Korpo",
-        ports: [
-            { id: "KP1", name: "4K-SDI Main Feed" },
-            { id: "KP2", name: "HD-SDI 1080i50" },
-            { id: "KP3", name: "MADI 64ch Input" },
-            { id: "KP4", name: "AES Audio 1-16" },
-            { id: "KP5", name: "3G-SDI Output" }
+        inputs: [
+            { id: "KPI1", name: "Monitor 1" },
+            { id: "KPI2", name: "Monitor 2" },
+            { id: "KPI3", name: "Tie-Line 1" },
+            { id: "KPI4", name: "Tie-Line 2" }
+        ],         
+        outputs: [ 
+            { id: "KPO1", name: "Camera 1" },
+            { id: "KPO2", name: "Camera 2" }
         ]
     },
     14: {
         name: "Vårdö",
-        ports: [
-            { id: "V1", name: "HD-SDI Input" },
-            { id: "V2", name: "3G-SDI 1080p50" },
-            { id: "V3", name: "Dante 32ch" },
-            { id: "V4", name: "MADI Output" },
-            { id: "V5", name: "AES/EBU 1-8" }
+        inputs: [
+            { id: "VI1", name: "Monitor 1" },
+            { id: "VI2", name: "Monitor 2" },
+            { id: "VI3", name: "Tie-Line 1" },
+            { id: "VI4", name: "Tie-Line 2" }
+        ],         
+        outputs: [ 
+            { id: "VO1", name: "Camera 1" },
+            { id: "VO2", name: "Camera 2" }
         ]
     }
 };
 	
 	function showConnectionPopup(startMarker, endMarker) {
-        // Remove any existing popup
-        const existingPopup = document.querySelector('.connection-popup');
-        if (existingPopup) {
-            existingPopup.remove();
-        }
+		// Remove any existing popup
+		const existingPopup = document.querySelector('.connection-popup');
+		if (existingPopup) {
+			existingPopup.remove();
+		}
 
-        // Create new popup
-        const popup = document.createElement('div');
-        popup.className = 'connection-popup';
+		// Create new popup
+		const popup = document.createElement('div');
+		popup.className = 'connection-popup';
 
-        // Calculate position - center of screen
-        const viewport = {
-            width: window.innerWidth,
-            height: window.innerHeight
-        };
-        
-        popup.style.left = `${(viewport.width - 300) / 2}px`;  // 300 is popup width
-        popup.style.top = `${(viewport.height - 400) / 2}px`;  // Approximate height
+		// Calculate position - center of screen
+		const viewport = {
+			width: window.innerWidth,
+			height: window.innerHeight
+		};
+		
+		popup.style.left = `${(viewport.width - 300) / 2}px`;
+		popup.style.top = `${(viewport.height - 400) / 2}px`;
 
-        // Popup content
-        popup.innerHTML = `
-            <button class="close-popup">&times;</button>
-            <h3>Configure Connection</h3>
-            <div class="port-section">
-                <h4>Source: ${startMarker.name}</h4>
-                ${(portData[startMarker.id]?.ports || []).map(port => `
-                    <div class="port-option">
-                        <input type="radio" name="source-port" id="source-${port.id}" value="${port.id}">
-                        <label for="source-${port.id}">${port.name}</label>
-                    </div>
-                `).join('')}
-            </div>
-            <div class="port-section">
-                <h4>Destination: ${endMarker.name}</h4>
-                ${(portData[endMarker.id]?.ports || []).map(port => `
-                    <div class="port-option">
-                        <input type="radio" name="dest-port" id="dest-${port.id}" value="${port.id}">
-                        <label for="dest-${port.id}">${port.name}</label>
-                    </div>
-                `).join('')}
-            </div>
-            <div class="schedule-section">
-                <input type="datetime-local" id="schedule-time">
-            </div>
-            <div class="button-group">
-                <button class="popup-button connect-now">Connect Now</button>
-                <button class="popup-button schedule-button">Schedule</button>
-            </div>
-        `;
+		// Popup content
+		popup.innerHTML = `
+			<button class="close-popup">&times;</button>
+			<h3>Configure Connection</h3>
+			
+			<div class="port-sections">
+				<div class="port-section">
+					<h4>Source: ${startMarker.name} (Outputs)</h4>
+					${(portData[startMarker.id]?.outputs || []).map(port => `
+						<div class="port-option">
+							<input type="radio" name="source-port" id="source-${port.id}" value="${port.id}">
+							<label for="source-${port.id}" title="${port.name}">
+								${port.name}
+							</label>
+						</div>
+					`).join('')}
+				</div>
 
-        // Add to document
-        document.body.appendChild(popup);
+				<div class="port-section">
+					<h4>Destination: ${endMarker.name} (Inputs)</h4>
+					${(portData[endMarker.id]?.inputs || []).map(port => `
+						<div class="port-option">
+							<input type="radio" name="dest-port" id="dest-${port.id}" value="${port.id}">
+							<label for="dest-${port.id}" title="${port.name}">
+								${port.name}
+							</label>
+						</div>
+					`).join('')}
+				</div>
+			</div>
 
-        // Event handlers
-        popup.querySelector('.close-popup').onclick = () => popup.remove();
-        
-        popup.querySelector('.connect-now').onclick = () => {
-            const sourcePort = popup.querySelector('input[name="source-port"]:checked')?.value;
-            const destPort = popup.querySelector('input[name="dest-port"]:checked')?.value;
-            
-            if (sourcePort && destPort) {
-                console.log('Connecting:', {
-                    source: { marker: startMarker.name, port: sourcePort },
-                    destination: { marker: endMarker.name, port: destPort }
-                });
-                popup.remove();
-            } else {
-                alert('Please select both source and destination ports');
-            }
-        };
+			<div class="schedule-section">
+				<input type="datetime-local" id="schedule-time">
+			</div>
 
-        popup.querySelector('.schedule-button').onclick = () => {
-            const sourcePort = popup.querySelector('input[name="source-port"]:checked')?.value;
-            const destPort = popup.querySelector('input[name="dest-port"]:checked')?.value;
-            const scheduleTime = popup.querySelector('#schedule-time').value;
-            
-            if (sourcePort && destPort && scheduleTime) {
-                console.log('Scheduling:', {
-                    source: { marker: startMarker.name, port: sourcePort },
-                    destination: { marker: endMarker.name, port: destPort },
-                    time: scheduleTime
-                });
-                popup.remove();
-            } else {
-                alert('Please select ports and schedule time');
-            }
-        };
-    }
+			<div class="button-group">
+				<button class="popup-button connect-now">Connect Now</button>
+				<button class="popup-button schedule-button">Schedule</button>
+			</div>
+		`;
 
-    function createConfigPopup(startMarker, endMarker, position) {
-        const popup = document.createElement('div');
-        popup.className = 'config-popup';
-        
-        // Calculate position relative to markers
-        const startPoint = map.project(startMarker.mapMarker.getLngLat());
-        popup.style.left = `${startPoint.x}px`;
-        popup.style.top = `${startPoint.y}px`;
+		// Add to document
+		document.body.appendChild(popup);
 
-        popup.innerHTML = `
-            <button class="close-button">&times;</button>
-            <h3>${startMarker.name} → ${endMarker.name}</h3>
-            
-            <div class="port-list">
-                <h3>Source Port</h3>
-                ${portData[startMarker.id].ports
-                    .filter(port => ['source', 'both'].includes(port.type))
-                    .map(port => `
-                        <div class="port-option">
-                            <input type="radio" name="source" id="source-${port.id}" value="${port.id}">
-                            <label for="source-${port.id}">
-                                <div class="radio-custom"></div>
-                                ${port.name}
-                            </label>
-                        </div>
-                    `).join('')}
-            </div>
+		// Event handlers
+		popup.querySelector('.close-popup').onclick = () => popup.remove();
+		
+		popup.querySelector('.connect-now').onclick = () => {
+			const sourcePort = popup.querySelector('input[name="source-port"]:checked')?.value;
+			const destPort = popup.querySelector('input[name="dest-port"]:checked')?.value;
+			
+			if (sourcePort && destPort) {
+				console.log('Connecting:', {
+					source: { 
+						location: startMarker.name, 
+						port: sourcePort,
+						portDetails: portData[startMarker.id].outputs.find(p => p.id === sourcePort)
+					},
+					destination: { 
+						location: endMarker.name, 
+						port: destPort,
+						portDetails: portData[endMarker.id].inputs.find(p => p.id === destPort)
+					}
+				});
+				popup.remove();
+			} else {
+				alert('Please select both source and destination ports');
+			}
+		};
 
-            <div class="port-list">
-                <h3>Destination Port</h3>
-                ${portData[endMarker.id].ports
-                    .filter(port => ['destination', 'both'].includes(port.type))
-                    .map(port => `
-                        <div class="port-option">
-                            <input type="radio" name="destination" id="dest-${port.id}" value="${port.id}">
-                            <label for="dest-${port.id}">
-                                <div class="radio-custom"></div>
-                                ${port.name}
-                            </label>
-                        </div>
-                    `).join('')}
-            </div>
-
-            <div class="schedule-container">
-                <input type="datetime-local" id="schedule-time">
-            </div>
-
-            <div class="button-container">
-                <button class="config-button connect-now">Connect Now</button>
-                <button class="config-button schedule">Schedule</button>
-            </div>
-        `;
-
-        document.body.appendChild(popup);
-
-        // Event handlers
-        popup.querySelector('.close-button').onclick = () => popup.remove();
-        popup.querySelector('.connect-now').onclick = () => {
-            const sourcePort = popup.querySelector('input[name="source"]:checked')?.value;
-            const destPort = popup.querySelector('input[name="destination"]:checked')?.value;
-            if (sourcePort && destPort) {
-                console.log('Connecting:', {
-                    sourceMarker: startMarker.name,
-                    sourcePort: sourcePort,
-                    destMarker: endMarker.name,
-                    destPort: destPort
-                });
-                popup.remove();
-            } else {
-                alert('Please select both source and destination ports');
-            }
-        };
-
-        popup.querySelector('.schedule').onclick = () => {
-            const scheduleTime = popup.querySelector('#schedule-time').value;
-            const sourcePort = popup.querySelector('input[name="source"]:checked')?.value;
-            const destPort = popup.querySelector('input[name="destination"]:checked')?.value;
-            
-            if (sourcePort && destPort && scheduleTime) {
-                console.log('Scheduling:', {
-                    sourceMarker: startMarker.name,
-                    sourcePort: sourcePort,
-                    destMarker: endMarker.name,
-                    destPort: destPort,
-                    scheduleTime: scheduleTime
-                });
-                popup.remove();
-            } else {
-                alert('Please select ports and schedule time');
-            }
-        };
-    }
+		popup.querySelector('.schedule-button').onclick = () => {
+			const sourcePort = popup.querySelector('input[name="source-port"]:checked')?.value;
+			const destPort = popup.querySelector('input[name="dest-port"]:checked')?.value;
+			const scheduleTime = popup.querySelector('#schedule-time').value;
+			
+			if (sourcePort && destPort && scheduleTime) {
+				console.log('Scheduling:', {
+					source: { 
+						location: startMarker.name, 
+						port: sourcePort,
+						portDetails: portData[startMarker.id].outputs.find(p => p.id === sourcePort)
+					},
+					destination: { 
+						location: endMarker.name, 
+						port: destPort,
+						portDetails: portData[endMarker.id].inputs.find(p => p.id === destPort)
+					},
+					time: scheduleTime
+				});
+				popup.remove();
+			} else {
+				alert('Please select ports and schedule time');
+			}
+		};
+	}
 
     // Modify the finalizeLine function to show the config popup
     function finalizeLine(startMarker, endMarker) {
