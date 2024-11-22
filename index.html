@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0">
+    <title>Åland Islands Network Map</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .marker {
+            width: 20px;
+            height: 20px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #27ae60;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibXBtY2tlbm5hOCIsImEiOiJfYWx3RlJZIn0.v-vrWv_t1ytntvWpeePhgQ';
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/dark-v10',
+        center: [20.2747, 60.1785], // Centered on Åland
+        zoom: 8,
+        dragPan: true
+    });
+
+    // Markers covering Åland and the archipelago to mainland Finland
+    const markersData = [
+        // Main Åland (Mariehamn and surroundings)
+        { id: 1, coordinates: [19.9444, 60.0970], name: "Mariehamn" },
+        { id: 2, coordinates: [20.0480, 60.2178], name: "Godby" },
+        { id: 3, coordinates: [19.8160, 60.2220], name: "Eckerö" },
+        { id: 4, coordinates: [20.2747, 60.1785], name: "Lumparland" },
+        
+        // Northern Åland
+        { id: 5, coordinates: [19.9790, 60.3557], name: "Geta" },
+        { id: 6, coordinates: [20.1650, 60.3330], name: "Saltvik" },
+        
+        // Eastern archipelago
+        { id: 7, coordinates: [20.5840, 60.2190], name: "Kumlinge" },
+        { id: 8, coordinates: [20.8180, 60.1870], name: "Brändö" },
+        { id: 9, coordinates: [21.0450, 60.1560], name: "Iniö" },
+        
+        // Southern archipelago
+        { id: 10, coordinates: [20.3180, 59.9470], name: "Föglö" },
+        { id: 11, coordinates: [20.5840, 59.9150], name: "Kökar" },
+        
+        // Additional islands and points
+        { id: 12, coordinates: [21.3180, 60.2150], name: "Houtskär" },
+        { id: 13, coordinates: [21.4850, 60.3680], name: "Korpo" },
+        { id: 14, coordinates: [20.2640, 60.4150], name: "Vårdö" }
+    ];
+
+    const markers = {};
+    const lines = [];
+    let isDrawing = false;
+    let tempLine = null;
+    let activeMarker = null;
+
+    map.on('load', () => {
+        // Base line layer
+        map.addSource('lines', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            }
+        });
+
+        // Main static lines
+        map.addLayer({
+            id: 'lines-base',
+            type: 'line',
+            source: 'lines',
+            layout: {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            paint: {
+                'line-color': '#2ecc71',
+                'line-width': 2,
+                'line-opacity': 0.3
+            }
+        });
+
+        // Animated flow effect
+        map.addLayer({
+            id: 'lines-animated',
+            type: 'line',
+            source: 'lines',
+            layout: {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            paint: {
+                'line-color': '#2ecc71',
+                'line-width': 2,
+                'line-opacity': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'progress'],
+                    0, 0,
+                    0.1, 1,
+                    0.3, 0.3,
+                    1, 0
+                ]
+            }
+        });
+
+        // Temporary drawing line
+        map.addSource('temp-line', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            }
+        });
+
+        map.addLayer({
+            id: 'temp-line',
+            type: 'line',
+            source: 'temp-line',
+            layout: {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            paint: {
+                'line-color': '#2ecc71',
+                'line-width': 2,
+                'line-dasharray': [2, 2]
+            }
+        });
+
+        // Add markers with tooltips
+        markersData.forEach((marker) => {
+            const el = document.createElement('div');
+            el.className = 'marker';
+            
+            // Add tooltip
+            const tooltip = new mapboxgl.Popup({
+                offset: 25,
+                closeButton: false
+            }).setText(marker.name);
+
+            const mapMarker = new mapboxgl.Marker(el)
+                .setLngLat(marker.coordinates)
+                .setPopup(tooltip)
+                .addTo(map);
+
+            markers[marker.id] = { ...marker, mapMarker };
+
+            el.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                isDrawing = true;
+                activeMarker = marker;
+                map.dragPan.disable();
+
+                tempLine = {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: [marker.coordinates, marker.coordinates]
+                    }
+                };
+
+                updateTemporaryLine();
+                document.addEventListener('mousemove', onMouseMove);
+            });
+
+            el.addEventListener('mouseup', (e) => {
+                if (isDrawing && activeMarker && marker.id !== activeMarker.id) {
+                    finalizeLine(activeMarker, marker);
+                }
+                resetDrawingState();
+            });
+        });
+
+        document.addEventListener('mouseup', resetDrawingState);
+
+        // Animation loop
+        function animate() {
+            const timestamp = Date.now();
+            
+            lines.forEach(line => {
+                line.properties = line.properties || {};
+                line.properties.progress = (timestamp % 1500) / 1500;
+            });
+
+            map.getSource('lines').setData({
+                type: 'FeatureCollection',
+                features: lines
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    });
+
+    function onMouseMove(e) {
+        if (!isDrawing || !tempLine) return;
+
+        const rect = map.getCanvas().getBoundingClientRect();
+        const point = [
+            e.clientX - rect.left,
+            e.clientY - rect.top
+        ];
+        const lngLat = map.unproject(point);
+
+        tempLine.geometry.coordinates[1] = [lngLat.lng, lngLat.lat];
+        updateTemporaryLine();
+    }
+
+    function updateTemporaryLine() {
+        if (!map.getSource('temp-line')) return;
+        
+        map.getSource('temp-line').setData({
+            type: 'FeatureCollection',
+            features: tempLine ? [tempLine] : []
+        });
+    }
+
+    function finalizeLine(startMarker, endMarker) {
+        const newLine = {
+            type: 'Feature',
+            properties: {
+                animated: true,
+                progress: 0
+            },
+            geometry: {
+                type: 'LineString',
+                coordinates: [startMarker.coordinates, endMarker.coordinates]
+            }
+        };
+
+        lines.push(newLine);
+
+        map.getSource('lines').setData({
+            type: 'FeatureCollection',
+            features: lines
+        });
+    }
+
+    function resetDrawingState() {
+        if (!isDrawing) return;
+        
+        isDrawing = false;
+        activeMarker = null;
+        tempLine = null;
+        map.dragPan.enable();
+        document.removeEventListener('mousemove', onMouseMove);
+        updateTemporaryLine();
+    }
+</script>
+</body>
+</html>
