@@ -10,17 +10,41 @@
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
         .marker {
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             background-color: #2ecc71;
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid #27ae60;
             box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+            touch-action: none;
+        }
+
+        .marker.active {
+            background-color: #27ae60;
+            transform: scale(1.2);
+        }
+
+        #instructions {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            max-width: 300px;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
+<div id="instructions">
+    Mouse: Click and drag from one marker to another
+    Touch: Tap and hold a marker, then drag to another
+</div>
 <div id="map"></div>
 
 <script>
@@ -29,33 +53,23 @@
     const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/dark-v10',
-        center: [20.2747, 60.1785], // Centered on Åland
+        center: [20.2747, 60.1785],
         zoom: 8,
         dragPan: true
     });
 
-    // Markers covering Åland and the archipelago to mainland Finland
     const markersData = [
-        // Main Åland (Mariehamn and surroundings)
         { id: 1, coordinates: [19.9444, 60.0970], name: "Mariehamn" },
         { id: 2, coordinates: [20.0480, 60.2178], name: "Godby" },
         { id: 3, coordinates: [19.8160, 60.2220], name: "Eckerö" },
         { id: 4, coordinates: [20.2747, 60.1785], name: "Lumparland" },
-        
-        // Northern Åland
         { id: 5, coordinates: [19.9790, 60.3557], name: "Geta" },
         { id: 6, coordinates: [20.1650, 60.3330], name: "Saltvik" },
-        
-        // Eastern archipelago
         { id: 7, coordinates: [20.5840, 60.2190], name: "Kumlinge" },
         { id: 8, coordinates: [20.8180, 60.1870], name: "Brändö" },
         { id: 9, coordinates: [21.0450, 60.1560], name: "Iniö" },
-        
-        // Southern archipelago
         { id: 10, coordinates: [20.3180, 59.9470], name: "Föglö" },
         { id: 11, coordinates: [20.5840, 59.9150], name: "Kökar" },
-        
-        // Additional islands and points
         { id: 12, coordinates: [21.3180, 60.2150], name: "Houtskär" },
         { id: 13, coordinates: [21.4850, 60.3680], name: "Korpo" },
         { id: 14, coordinates: [20.2640, 60.4150], name: "Vårdö" }
@@ -66,9 +80,22 @@
     let isDrawing = false;
     let tempLine = null;
     let activeMarker = null;
+    let touchTimeout = null;
+
+    function findMarkerUnderCursor(point) {
+        for (let id in markers) {
+            const marker = markers[id];
+            const markerPoint = map.project(marker.mapMarker.getLngLat());
+            const dx = markerPoint.x - point.x;
+            const dy = markerPoint.y - point.y;
+            if (dx * dx + dy * dy < 225) { // 15px radius
+                return marker;
+            }
+        }
+        return null;
+    }
 
     map.on('load', () => {
-        // Base line layer
         map.addSource('lines', {
             type: 'geojson',
             data: {
@@ -77,7 +104,6 @@
             }
         });
 
-        // Main static lines
         map.addLayer({
             id: 'lines-base',
             type: 'line',
@@ -93,7 +119,6 @@
             }
         });
 
-        // Animated flow effect
         map.addLayer({
             id: 'lines-animated',
             type: 'line',
@@ -117,7 +142,6 @@
             }
         });
 
-        // Temporary drawing line
         map.addSource('temp-line', {
             type: 'geojson',
             data: {
@@ -141,12 +165,10 @@
             }
         });
 
-        // Add markers with tooltips
         markersData.forEach((marker) => {
             const el = document.createElement('div');
             el.className = 'marker';
             
-            // Add tooltip
             const tooltip = new mapboxgl.Popup({
                 offset: 25,
                 closeButton: false
@@ -157,13 +179,15 @@
                 .setPopup(tooltip)
                 .addTo(map);
 
-            markers[marker.id] = { ...marker, mapMarker };
+            markers[marker.id] = { ...marker, mapMarker, element: el };
 
+            // Mouse events
             el.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 isDrawing = true;
                 activeMarker = marker;
+                el.classList.add('active');
                 map.dragPan.disable();
 
                 tempLine = {
@@ -175,23 +199,37 @@
                 };
 
                 updateTemporaryLine();
-                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
             });
 
-            el.addEventListener('mouseup', (e) => {
-                if (isDrawing && activeMarker && marker.id !== activeMarker.id) {
-                    finalizeLine(activeMarker, marker);
-                }
-                resetDrawingState();
-            });
+            // Touch events
+            el.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touchTimeout = setTimeout(() => {
+                    isDrawing = true;
+                    activeMarker = marker;
+                    el.classList.add('active');
+                    map.dragPan.disable();
+
+                    tempLine = {
+                        type: 'Feature',
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: [marker.coordinates, marker.coordinates]
+                        }
+                    };
+
+                    updateTemporaryLine();
+                }, 200);
+            }, { passive: false });
+
+            el.addEventListener('touchmove', handleTouchMove);
+            el.addEventListener('touchend', handleTouchEnd);
         });
 
-        document.addEventListener('mouseup', resetDrawingState);
-
-        // Animation loop
         function animate() {
             const timestamp = Date.now();
-            
             lines.forEach(line => {
                 line.properties = line.properties || {};
                 line.properties.progress = (timestamp % 1500) / 1500;
@@ -206,25 +244,84 @@
         }
 
         animate();
+
+        setTimeout(() => {
+            const instructions = document.getElementById('instructions');
+            instructions.style.opacity = '0';
+            instructions.style.transition = 'opacity 1s';
+        }, 5000);
     });
 
-    function onMouseMove(e) {
+    function handleMouseMove(e) {
         if (!isDrawing || !tempLine) return;
 
         const rect = map.getCanvas().getBoundingClientRect();
-        const point = [
-            e.clientX - rect.left,
-            e.clientY - rect.top
-        ];
+        const point = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
         const lngLat = map.unproject(point);
 
         tempLine.geometry.coordinates[1] = [lngLat.lng, lngLat.lat];
         updateTemporaryLine();
     }
 
+    function handleMouseUp(e) {
+        if (!isDrawing) return;
+
+        const rect = map.getCanvas().getBoundingClientRect();
+        const point = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+
+        const endMarker = findMarkerUnderCursor(point);
+        if (endMarker && endMarker.id !== activeMarker.id) {
+            finalizeLine(activeMarker, endMarker);
+        }
+
+        resetDrawingState();
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    }
+
+    function handleTouchMove(e) {
+        if (!isDrawing || !tempLine) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const rect = map.getCanvas().getBoundingClientRect();
+        const point = {
+            x: touch.clientX - rect.left,
+            y: touch.clientY - rect.top
+        };
+        const lngLat = map.unproject(point);
+
+        tempLine.geometry.coordinates[1] = [lngLat.lng, lngLat.lat];
+        updateTemporaryLine();
+    }
+
+    function handleTouchEnd(e) {
+        clearTimeout(touchTimeout);
+        if (!isDrawing) return;
+
+        const touch = e.changedTouches[0];
+        const rect = map.getCanvas().getBoundingClientRect();
+        const point = {
+            x: touch.clientX - rect.left,
+            y: touch.clientY - rect.top
+        };
+
+        const endMarker = findMarkerUnderCursor(point);
+        if (endMarker && endMarker.id !== activeMarker.id) {
+            finalizeLine(activeMarker, endMarker);
+        }
+
+        resetDrawingState();
+    }
+
     function updateTemporaryLine() {
         if (!map.getSource('temp-line')) return;
-        
         map.getSource('temp-line').setData({
             type: 'FeatureCollection',
             features: tempLine ? [tempLine] : []
@@ -245,7 +342,6 @@
         };
 
         lines.push(newLine);
-
         map.getSource('lines').setData({
             type: 'FeatureCollection',
             features: lines
@@ -256,10 +352,12 @@
         if (!isDrawing) return;
         
         isDrawing = false;
+        if (activeMarker && markers[activeMarker.id]) {
+            markers[activeMarker.id].element.classList.remove('active');
+        }
         activeMarker = null;
         tempLine = null;
         map.dragPan.enable();
-        document.removeEventListener('mousemove', onMouseMove);
         updateTemporaryLine();
     }
 </script>
